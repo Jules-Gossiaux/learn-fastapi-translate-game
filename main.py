@@ -21,8 +21,8 @@ DATA_FILE = "game_data.json"
 # Configuration CORS : permet au frontend (HTML/JavaScript) de communiquer avec le backend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Accepte toutes les origines (pour le développement)
-    allow_credentials=True,
+    allow_origins=["*"],  # Accepte toutes les origines
+    allow_credentials=False,
     allow_methods=["*"],  # Accepte toutes les méthodes (GET, POST, etc.)
     allow_headers=["*"],  # Accepte tous les headers
 )

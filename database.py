@@ -212,7 +212,7 @@ def add_attemp(user_id, word_id, guess, is_correct, date):
                     INSERT INTO guesses
                     (user_id, word_id, guess, is_correct, date)
                     VALUES ((%s), (%s), (%s), (%s), (%s))
-                """, (user_id, word_id, guess, is_correct, date))
+                """, (user_id, word_id, guess, int(is_correct), date))
     curseur.execute("UPDATE users SET attempts = attempts + 1 WHERE id = (%s)", (user_id,))
     if is_correct:
         curseur.execute("UPDATE users SET score = score + 1 WHERE id = (%s)", (user_id,))
