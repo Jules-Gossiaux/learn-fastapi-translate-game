@@ -1,5 +1,5 @@
 // L'adresse de ton backend
-const API_URL = "http://localhost:8000";
+const API_URL = "https://translate-game-api.onrender.com";
 
 // Éléments html
 const selectLevel = document.getElementById("difficulty-level")
