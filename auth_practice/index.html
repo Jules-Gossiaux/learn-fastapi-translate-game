@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Practice</title>
+    <style>
+        body { font-family: Arial; max-width: 800px; margin: 50px auto; padding: 20px; }
+        .section { margin: 30px 0; padding: 20px; border: 1px solid #ddd; }
+        input { margin: 5px 0; padding: 8px; width: 200px; }
+        button { padding: 10px 20px; margin: 10px 5px; cursor: pointer; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>🔐 Auth Practice</h1>
+
+    <!-- SECTION REGISTER -->
+    <div class="section">
+        <h2>Créer un compte</h2>
+        <input type="text" id="reg-username" placeholder="Username">
+        <input type="password" id="reg-password" placeholder="Password">
+        <button onclick="register()">S'inscrire</button>
+        <p id="reg-message"></p>
+    </div>
+
+    <!-- SECTION LOGIN -->
+    <div class="section">
+        <h2>Se connecter</h2>
+        <input type="text" id="login-username" placeholder="Username">
+        <input type="password" id="login-password" placeholder="Password">
+        <button onclick="login()">Se connecter</button>
+        <button onclick="logout()">Se déconnecter</button>
+        <p id="login-message"></p>
+    </div>
+
+    <!-- SECTION PROTÉGÉE -->
+    <div class="section">
+        <h2>Zone protégée</h2>
+        <button onclick="getMe()">Voir mon profil (/me)</button>
+        <button onclick="testProtected()">Tester route protégée</button>
+        <p id="protected-message"></p>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📋 Ma Todo List</title>
+
+</head>
+<body>
+    <h1>📋 Ma Todo List</h1>
+    
+    <!-- Formulaire pour ajouter une tâche -->
+    <div class="add-task">
+        <input type="text" id="task-input" placeholder="Nouvelle tâche..." />
+        <button id="add-btn" onclick="add_task()">Ajouter</button>
+    </div>
+    
+    <!-- Liste des tâches -->
+    <div class="task-list" id="task-list">
+        <!-- Les tâches seront ajoutées ici par JavaScript -->
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:8000";
+        chargerTasks()
+        
+        async function chargerTasks() {
+            const response = await fetch(`${API_URL}/tasks`);
+            const data = await response.json();
+            console.log(data);
+            afficherTasks(data.tasks)
+            return data;
+        }
+        
+        function afficherTasks(tasks) {
+            // Afficher chaque tâche : checkbox + titre + bouton supprimer
+            const taskList = document.getElementById('task-list');
+            taskList.innerHTML = ''; // Vider la liste avant de la remplir
+            
+            tasks.forEach(task => {
+                // Créer le conteneur de la tâche
+                const taskDiv = document.createElement('div');
+                taskDiv.className = 'task-item';
+                taskDiv.style.cssText = 'display: flex; align-items: center; padding: 10px; margin: 5px 0; background: #f5f5f5; border-radius: 5px;';
+                
+                // Créer la checkbox
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = task.completed;
+                checkbox.style.cssText = 'margin-right: 10px; cursor: pointer;';
+                checkbox.addEventListener('change', () => updateTask(task.id, checkbox.checked));
+                
+                // Créer le texte de la tâche
+                const taskText = document.createElement('span');
+                taskText.textContent = task.title;
+                taskText.style.cssText = task.completed ? 'text-decoration: line-through; flex-grow: 1; color: #888;' : 'flex-grow: 1;';
+                
+                // Créer le bouton supprimer
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = '🗑️';
+                deleteBtn.style.cssText = 'background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;';
+                deleteBtn.addEventListener('click', () => supprimerTask(task.id));
+                
+                // Assembler les éléments
+                taskDiv.appendChild(checkbox);
+                taskDiv.appendChild(taskText);
+                taskDiv.appendChild(deleteBtn);
+                
+                // Ajouter à la liste
+                taskList.appendChild(taskDiv);
+            });
+        }
+        
+        async function add_task() {
+            const title_task = document.getElementById('task-input').value;
+            
+            // Vérifier si le titre n'est pas vide
+            if (!title_task.trim()) {
+                alert("Le titre ne peut pas être vide !");
+                return;
+            }
+            
+            // Récupérer les tâches actuelles
+            const response_tasks = await fetch(`${API_URL}/tasks`);
+            const data_tasks = await response_tasks.json();
+            
+            // Vérifier si une tâche avec ce titre existe déjà
+            const taskExists = data_tasks.tasks.some(task => task.title === title_task);
+            
+            if (taskExists) {
+                alert("Cette tâche existe déjà !");
+                return;
+            }
+            
+            // Ajouter la tâche si elle n'existe pas
+            const response = await fetch(`${API_URL}/tasks`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": 'application/json'
+                },
+                body: JSON.stringify({
+                    title: title_task
+                })
+            });
+            
+            // Vider l'input
+            document.getElementById('task-input').value = '';
+            
+            // Recharger les tâches
+            chargerTasks();
+            const data = await response.json();
+            return data;
+
+        }
+        
+        async function updateTask(taskId, completed) {
+            const response = await fetch(`${API_URL}/tasks/${taskId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    completed: completed
+                })
+            });
+            chargerTasks()
+            const data = await response.json();
+            return data;
+        }
+        
+        async function supprimerTask(taskId) {
+            const response = await fetch(`${API_URL}/tasks/${taskId}`,{
+                method: "DELETE",
+            });
+            chargerTasks()
+            data = await response.json();
+            return data;
+        }
+        
+        // Événements : click sur #add-btn, Enter dans input, charger au démarrage
+        
+    </script>
+</body>
+</html>

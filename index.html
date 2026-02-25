@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu de Traduction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .score {
+            text-align: center;
+            font-size: 24px;
+            color: #4CAF50;
+            margin: 20px 0;
+        }
+        .mot {
+            text-align: center;
+            font-size: 32px;
+            color: #2196F3;
+            margin: 30px 0;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            font-size: 18px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 16px;
+        }
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .leaderboard-table th {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        .leaderboard-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .leaderboard-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .leaderboard-table tr.current-user {
+            background-color: #d4edda;
+            font-weight: bold;
+        }
+        .rank-1 { color: gold; font-weight: bold; }
+        .rank-2 { color: silver; font-weight: bold; }
+        .rank-3 { color: #cd7f32; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <!-- SECTION REGISTER -->
+    <div class="section">
+        <h2>Créer un compte</h2>
+        <input type="text" id="reg-username" placeholder="Username">
+        <input type="password" id="reg-password" placeholder="Password">
+        <button onclick="register()">S'inscrire</button>
+        <p id="reg-message"></p>
+    </div>
+
+    <!-- SECTION LOGIN -->
+    <div class="section">
+        <h2>Se connecter</h2>
+        <input type="text" id="login-username" placeholder="Username">
+        <input type="password" id="login-password" placeholder="Password">
+        <button onclick="login()">Se connecter</button>
+        <button onclick="logout()">Se déconnecter</button>
+        <p id="login-message"></p>
+    </div>
+
+    <select id="difficulty-level">
+        <option value="facile" selected>Facile</option>
+        <option value="moyen">Moyen</option>
+        <option value="difficile">Difficile</option>
+    </select>
+    
+    <div class="container">
+        <h1>🎮 Jeu de Traduction</h1>
+        
+        <div class="score">
+            Score : <span id="score">0</span>
+        </div>
+        <div class="score">
+            Tentatives: <span id="attempts">0</span>
+        </div>
+
+        <div class="mot" id="english-word">
+            Cliquez sur "Nouveau mot" pour commencer
+        </div>
+        <div class="mot" id="correction-zone">
+
+        </div>
+        <input 
+            type="text" 
+            id="user-traduction" 
+            placeholder="Entrez la traduction en français"
+            disabled
+        >
+
+        <button onclick="newWord()" id="new-word-button" disabled>Nouveau mot</button>
+        <button onclick="verify()" id="verify-button" disabled>Vérifier</button>
+        <button onclick="resetScore()">Réinitialiser le score</button>
+
+        <div id="message"></div>
+    </div>
+    <details class="details" id="statistics-accordion">
+        <summary>Statistiques</summary>
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th>Niveau</th>
+                    <th>Tentatives</th>
+                    <th>Correctes</th>
+                    <th>Taux de réussite</th>
+                </tr>
+            </thead>
+            <tbody id="statistics">
+                <tr><td colspan="4">Vous n'avez pas encore joué</td></tr>
+            </tbody>
+        </table>
+        <p id="statistics-total"></p>
+    </details>
+    <details class="details" id="historical-accordion">
+        <summary>Historique (5 derniers)</summary>
+        <div id="historical">Aucune tentative pour le moment</div>
+    </details>  
+
+    <!-- SECTION LEADERBOARD -->
+    <details class="details" id="leaderboard-accordion">
+        <summary>🏆 Leaderboard (Top 10)</summary>
+        <select id="leaderboard-filter">
+            <option value="tous">Tous les niveaux</option>
+            <option value="facile">Facile</option>
+            <option value="moyen">Moyen</option>
+            <option value="difficile">Difficile</option>
+        </select>
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th>Rang</th>
+                    <th>Joueur</th>
+                    <th>Score</th>
+                    <th>Tentatives</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+                <tr><td colspan="4">Chargement...</td></tr>
+            </tbody>
+        </table>
+    </details>
+
+    <script src="main.js" defer></script>
+</body>
+</html>
